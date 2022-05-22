@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -9,7 +10,7 @@ import (
 // Interface shape
 // Made sure that triangle and square matched the interface by having a function called getArea int
 type shape interface {
-	getArea() int
+	getArea() (int, error)
 }
 
 // square with a field called sideLength
@@ -29,21 +30,23 @@ func printArea(s shape) {
 }
 
 // square method with receiver
-func (s square) getArea() int {
-	return int(s.sideLength * s.sideLength)
+func (s square) getArea() (int, error) {
+	if s.sideLength <= 0 {
+		return 0, errors.New("error: square sides should be greater than 0")
+	}
+	return int(s.sideLength * s.sideLength), nil
 }
 
 // triangle method with receiver
-func (t triangle) getArea() int {
-	return int((t.base * t.height) * 0.5)
+func (t triangle) getArea() (int, error) {
+	if t.height <= 0 || t.base <= 0 {
+		return 0, errors.New("error: triangle base and height should be greater than 0")
+	}
+
+	return int((t.base * t.height) * 0.5), nil
 }
 
 func main() {
-	//r1 := triangle{height: 3, base: 4}
-	//s1 := square{sideLength: 4}
-	//
-	//printArea(r1)
-	//printArea(s1)
 	fmt.Println("(Area)Enter the shape you want to calculate(triangle/square):")
 
 	// Create a variable and takes the user input
@@ -61,6 +64,7 @@ func main() {
 
 		userTriangle := triangle{float64(userHeight), float64(userBase)}
 		printArea(userTriangle)
+
 	} else if strings.ToLower(userInputShape) == "square" {
 		var userSide int
 		fmt.Println("Enter the base of the square")
